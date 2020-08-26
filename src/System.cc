@@ -25,6 +25,7 @@
 #include <thread>
 #include <pangolin/pangolin.h>
 #include <iomanip>
+#include <unistd.h>
 
 namespace ORB_SLAM2
 {
@@ -487,6 +488,33 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
 {
     unique_lock<mutex> lock(mMutexState);
     return mTrackedKeyPointsUn;
+}
+
+void System::SaveMapPoints(const string &filename) {
+    cout << endl << "Saving map points to " << filename << " ..." << endl;
+
+    vector<MapPoint*> vpMPs = mpMap->GetAllMapPoints();
+
+    // Transform all keyframes so that the first keyframe is at the origin.
+    // After a loop closure the first keyframe might not be at the origin.
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    for(size_t i=0; i<vpMPs.size(); i++) {
+        MapPoint* pMP = vpMPs[i];
+
+        if(pMP->isBad())
+            continue;
+
+        cv::Mat MPPositions = pMP->GetWorldPos();
+
+        f << setprecision(7) << " " << MPPositions.at<float>(0) << " " << MPPositions.at<float>(1) << " " << MPPositions.at<float>(2) << endl;
+    }
+
+    f.close();
+    cout << endl << "Map Points saved!" << endl;
+
 }
 
 } //namespace ORB_SLAM

@@ -35,6 +35,7 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
+#include <unistd.h>
 
 namespace ORB_SLAM2
 {
@@ -57,6 +58,9 @@ public:
     };
 
 public:
+
+    void SaveMapPoints(const string &filename);
+
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
@@ -174,7 +178,10 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+    
 };
+
+
 
 }// namespace ORB_SLAM
 
